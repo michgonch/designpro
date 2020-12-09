@@ -1,0 +1,49 @@
+version: '3.8'
+ 
+services:
+  web:
+    # image: php:7-apache
+    build:
+      context: .
+    networks: 
+      - backend
+    depends_on:
+      - db
+    volumes:
+      - ./server:/var/www/html/
+    ports:
+      - "8080:80"
+
+  db:
+    image: mysql:8
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: designpro
+      MYSQL_USER: admin
+      MYSQL_PASSWORD: pass
+    ports:
+      - "6033:3306"
+    networks: 
+      - backend
+    volumes:
+      - dbdata:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin:5
+    depends_on:
+      - db
+    networks: 
+      - backend
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306
+      PMA_ARBITRARY: 1
+    restart: always
+    ports:
+      - 8081:80
+
+networks:
+  backend:
+
+volumes:
+  dbdata:
